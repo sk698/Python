@@ -1,0 +1,6 @@
+# Rename this file from .env copy -> .env only
+
+DB_HOST="localhost" #Database Host
+DB_USER="root" #Database user
+DB_PASSWORD="12345678" #Database password
+DB_NAME="bus_db" #Your Database name

@@ -1,12 +1,18 @@
 import mysql.connector
+import os
 from mysql.connector import errorcode
 from fastapi import FastAPI, HTTPException, status
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import date
 from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
+from pathlib import Path
 
 # --- Pydantic Models for Request/Response Validation ---
+dotenv_path = Path(__file__).parent.parent / '.env'
+load_dotenv(dotenv_path=dotenv_path)
+
 
 class BusBase(BaseModel):
     bus_name: str
@@ -63,11 +69,6 @@ app = FastAPI(
     description="API for managing bus routes and bookings."
 )
 
-# List of origins that are allowed to make requests
-origins = [
-    "http://localhost:5173",  # Your Vite+React app's origin
-    "http://127.0.0.1:5173", # Just in case
-]
 
 app.add_middleware(
     CORSMiddleware,
@@ -80,15 +81,16 @@ app.add_middleware(
 
 # --- Database Connection ---
 
+
+
 try:
-    # Using the same credentials from your app.py
     conn = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="12345678",  
-        database="bus_db"
+        host=os.getenv("DB_HOST"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        database=os.getenv("DB_NAME")
     )
-    cursor = conn.cursor(dictionary=True) # dictionary=True is easier for Pydantic
+    cursor = conn.cursor(dictionary=True)
     print("Database connection successful!")
 except mysql.connector.Error as err:
     print(f"Error: {err}")
