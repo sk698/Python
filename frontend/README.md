@@ -27,12 +27,18 @@ This is the React-based web interface for the Bus Ticket Booking System. It's bu
     npm install
     ```
 
-3.  **Run the development server:**
+3. **Configuration**
+ 
+   >Rename `.env copy` file to `.env` only  
+
+   >Configure `.env` file by default server is running on `http://127.0.0.1:8000`
+
+4.  **Run the development server:**
     ```bash
     npm run dev
     ```
-4.  Open your browser to the URL shown in the terminal (usually `http://localhost:5173`).
+5.  Open your browser to the URL shown in the terminal (`http://localhost:5173`).
 
 ## API Connection
 
-This application is configured in `src/api.js` to connect to the backend at `http://127.0.0.1:8000`. If your backend is running on a different port, you must update this file.
+This application is configured in `src/api.js` to connect to the backend at `http://127.0.0.1:8000`. If your backend is running on a different port, configure `.env` file.
