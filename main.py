@@ -1,16 +1,20 @@
 import tkinter as tk
+import os
 from tkinter import ttk, messagebox
 import mysql.connector
 from tkinter import simpledialog, messagebox
 from tkcalendar import Calendar
+from dotenv import load_dotenv
 
+load_dotenv()
 
 try:
     conn = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="12345678",  
-        database="bus_db"
+        host=os.getenv("DB_HOST"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        database=os.getenv("DB_NAME"),
+        port=int(os.getenv("DB_PORT"))
     )
     cursor = conn.cursor()
 except:
@@ -25,10 +29,11 @@ def refresh_buses(tree):
     try:
         # Reconnect each time to get the latest data
         conn = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="12345678",
-            database="bus_db"
+        host=os.getenv("DB_HOST"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        database=os.getenv("DB_NAME"),
+        port=int(os.getenv("DB_PORT"))
         )
         cursor = conn.cursor()
 
