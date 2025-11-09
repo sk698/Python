@@ -7,11 +7,11 @@ from typing import List, Optional
 from datetime import date
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
-from pathlib import Path
+
 
 # --- Pydantic Models for Request/Response Validation ---
-dotenv_path = Path(__file__).parent.parent / '.env'
-load_dotenv(dotenv_path=dotenv_path)
+
+load_dotenv()
 
 
 class BusBase(BaseModel):
