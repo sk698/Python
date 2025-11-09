@@ -1,50 +1,64 @@
-# Welcome to your Expo app 👋
+# 📱 Mobile App: Bus Booking (React Native + Expo)
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+This is the React Native (Expo) mobile application for the Bus Ticket Booking System. It's written in **TypeScript** and uses **Expo Router** for navigation and **React Context** for global state management.
 
-## Get started
+## Features
 
-1. Install dependencies
+* **Tabbed Navigation:** Simple two-tab layout for "Book" and "Admin".
+* **Global State:** Uses React Context (`src/BusContext.tsx`) to share bus data and loading states across all components.
+* **Book Tab:**
+    * View all available buses.
+    * Book a new ticket using a native form (with date picker).
+    * Cancel an existing ticket by its ID.
+* **Admin Tab:**
+    * Add a new bus route.
+    * View all buses with a "Remove" button on each.
 
-   ```bash
-   npm install
-   ```
+## Prerequisites
 
-2. Start the app
+* [Node.js](https://nodejs.org/) (LTS version recommended).
+* The **Expo Go** app on your physical iOS or Android device.
+    * (Alternatively) An [Android Emulator](https://docs.expo.dev/workflow/android-studio-emulator/) or [iOS Simulator](https://docs.expo.dev/workflow/ios-simulator/).
+* The **FastAPI backend** (from the `/backend` directory) **must be running** and accessible on your local network.
 
-   ```bash
-   npx expo start
-   ```
+## ⚠️ CRITICAL: Setup & Installation
 
-In the output, you'll find options to open the app in a
+You **must** configure the API connection before this app will work.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+1.  **Navigate to this directory:**
+    ```bash
+    cd my-app
+    ```
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
 
-## Get a fresh project
+3.  **Find your Computer's Network IP:**
+    * **Windows:** Open `cmd` and type `ipconfig` (Look for `IPv4 Address`).
+    * **macOS/Linux:** Open `Terminal` and type `ifconfig | grep inet` (Look for the `inet` address, e.g., `192.168.1.X`).
 
-When you're ready, run:
+4.  **Update the API Configuration:**
+    * Open the file `my-app/src/api.ts`.
+    * Change the `API_IP` constant from its placeholder to your computer's actual network IP address.
 
-```bash
-npm run reset-project
-```
+    ```typescript
+    // my-app/src/api.ts
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+    // ...
+    //
+    // Your phone/simulator must be on the same WiFi network as your computer.
+    //
+    const API_IP = '192.168.1.6'; // <-- CHANGE THIS to your computer's IP
+    const API_PORT = '8000'; // Your FastAPI port
+    const API_BASE_URL = `http://${API_IP}:${API_PORT}`;
+    // ...
+    ```
 
-## Learn more
+5.  **Run the app:**
+    ```bash
+    npx expo start
+    ```
 
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+6.  Scan the QR code shown in the terminal using the **Expo Go** app on your phone.
