@@ -47,7 +47,7 @@ To run the full system (backend + frontend + mobile), follow these steps in orde
     ```
 4.  Run the API server:
     ```bash
-    uvicorn main:app --host 127.0.0.1 --port 8000 --reload
+    uvicorn main:app --reload --host 0.0.0.0
     ```
 5.  The API will be live at `http://127.0.0.1:8000/docs`.
 
