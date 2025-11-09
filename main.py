@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 import mysql.connector
 from tkinter import simpledialog, messagebox
+from tkcalendar import Calendar
+
 
 try:
     conn = mysql.connector.connect(
@@ -20,11 +22,30 @@ root.geometry("900x600")
 root.configure(bg="#f4f4f4")
 
 def refresh_buses(tree):
-    for row in tree.get_children():
-        tree.delete(row)
-    cursor.execute("SELECT bus_id, bus_name, source, destination, available_seats, fare_per_seat FROM Buses")
-    for bus in cursor.fetchall():
-        tree.insert("", "end", values=bus)
+    try:
+        # Reconnect each time to get the latest data
+        conn = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="12345678",
+            database="bus_db"
+        )
+        cursor = conn.cursor()
+
+        # Clear old data
+        for row in tree.get_children():
+            tree.delete(row)
+
+        # Fetch new data
+        cursor.execute("SELECT bus_id, bus_name, source, destination, available_seats, fare_per_seat FROM Buses")
+        for bus in cursor.fetchall():
+            tree.insert("", "end", values=bus)
+
+        conn.close()  # Always close connection after refresh
+
+    except mysql.connector.Error as err:
+        messagebox.showerror("Database Error", f"Error: {err}")
+
 
 def book_ticket_window():
     win = tk.Toplevel(root)
@@ -52,9 +73,10 @@ def book_ticket_window():
     seat_entry = tk.Entry(win)
     seat_entry.pack()
 
-    tk.Label(win, text="Travel Date (YYYY-MM-DD)").pack()
-    date_entry = tk.Entry(win)
-    date_entry.pack()
+    tk.Label(win, text="Select Travel Date").pack()
+    cal = Calendar(win, selectmode='day', date_pattern='yyyy-mm-dd')
+    cal.pack(pady=10)
+
 
     def confirm_booking():
         try:
@@ -63,7 +85,7 @@ def book_ticket_window():
             gender = gender_entry.get()
             bus_id = int(bus_entry.get())
             seats = int(seat_entry.get())
-            date = date_entry.get()
+            date = cal.get_date()
 
             cursor.execute("SELECT available_seats, fare_per_seat FROM Buses WHERE bus_id=%s", (bus_id,))
             data = cursor.fetchone()
@@ -80,7 +102,7 @@ def book_ticket_window():
             cursor.execute("INSERT INTO Passengers (name, age, gender) VALUES (%s,%s,%s)", (name, age, gender))
             pid = cursor.lastrowid
             cursor.execute("""INSERT INTO Bookings (passenger_id,bus_id,seats_booked,total_fare,travel_date)
-                           VALUES (%s,%s,%s,%s,%s)""", (pid, bus_id, seats, total, date))
+                            VALUES (%s,%s,%s,%s,%s)""", (pid, bus_id, seats, total, date))
             cursor.execute("UPDATE Buses SET available_seats=available_seats-%s WHERE bus_id=%s", (seats, bus_id))
             conn.commit()
             messagebox.showinfo("Success", f"Booking Confirmed!\nTotal Fare: ₹{total}")
@@ -147,7 +169,7 @@ def admin_panel():
             try:
                 cursor.execute("""INSERT INTO Buses (bus_name,source,destination,total_seats,available_seats,fare_per_seat)
                                 VALUES (%s,%s,%s,%s,%s,%s)""",
-                               (entries["Bus Name"].get(),
+                                (entries["Bus Name"].get(),
                                 entries["Source"].get(),
                                 entries["Destination"].get(),
                                 int(entries["Total Seats"].get()),
@@ -189,5 +211,35 @@ tk.Button(btn_frame, text="Book Ticket", command=book_ticket_window, bg="#4CAF50
 tk.Button(btn_frame, text="Cancel Booking", command=cancel_booking_window, bg="#E53935", fg="white", width=15).grid(row=0, column=1, padx=10)
 tk.Button(btn_frame, text="Admin Panel", command=admin_panel, bg="#1E88E5", fg="white", width=15).grid(row=0, column=2, padx=10)
 tk.Button(btn_frame, text="Refresh", command=lambda: refresh_buses(tree), bg="#757575", fg="white", width=15).grid(row=0, column=3, padx=10)
+
+def open_calendar():
+    cal_win = tk.Toplevel(root)
+    cal_win.title("Select Date")
+    cal_win.geometry("300x300")
+
+    cal = Calendar(cal_win, selectmode='day', date_pattern='yyyy-mm-dd')
+    cal.pack(pady=20)
+
+    def get_date():
+        selected_date = cal.get_date()
+        messagebox.showinfo("Selected Date", f"You picked: {selected_date}")
+        cal_win.destroy()
+
+    tk.Button(cal_win, text="Confirm", command=get_date, bg="green", fg="white").pack(pady=10)
+
+# ---- MENU BAR ----
+menubar = tk.Menu(root)
+root.config(menu=menubar)
+
+file_menu = tk.Menu(menubar, tearoff=0)
+file_menu.add_command(label="Refresh", command=lambda: refresh_buses(tree))
+file_menu.add_separator()
+file_menu.add_command(label="Exit", command=root.quit)
+menubar.add_cascade(label="File", menu=file_menu)
+
+calendar_menu = tk.Menu(menubar, tearoff=0)
+calendar_menu.add_command(label="Open Calendar", command=open_calendar)
+menubar.add_cascade(label="Calendar", menu=calendar_menu)
+
 
 root.mainloop()
