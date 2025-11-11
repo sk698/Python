@@ -15,7 +15,7 @@ load_dotenv()
 
 allowed_origins = [
     "https://bus-ticket-booking.up.railway.app",
-    "https://bus-ticket-booking-v1.vercel.app/",
+    "https://bus-ticket-booking-v1.vercel.app",
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "http://localhost:8081",
